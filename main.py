@@ -1,9 +1,10 @@
 from playsound import playsound
 from flask import Flask
+from threading import Thread
 
 import os
 import json
-
+print("hello")
 sounds = []
 
 cur_id = 0
@@ -15,9 +16,13 @@ for file in os.listdir("sounds"):
 
 app = Flask(__name__, static_url_path='/', static_folder='public')
 
+def play_sound_file(file):
+    print("hello gitter")
+    playsound(file)
+
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return 'Hello, Gitter!'
 
 
 @app.route('/sounds')
@@ -27,9 +32,10 @@ def show_sounds():
 @app.route('/play/<id>')
 def play_sound(id):
     sound_to_play = sounds[int(id)]["name"]+".mp3"
-    print(sound_to_play)
-    playsound("sounds/"+sound_to_play)
+    t = Thread(target=play_sound_file, args=("sounds/"+sound_to_play,))
+    t.start()
     return sounds[int(id)]["name"]
+
 
 
 app.run(host="0.0.0.0", port=8080)
